@@ -4,18 +4,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import api from '~/services/api';
 
-import Backgroud from '~/components/Background';
+import Background from '~/components/Background';
 import DateInput from '~/components/DateInput';
+
 import { Container, HourList, Hour, Title } from './styles';
 
-export default function SelectDateTime([navigation]) {
+export default function SelectDateTime({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [hours, setHours] = useState([]);
 
   const provider = navigation.getParam('provider');
 
   useEffect(() => {
-    async function loadAvailable() {
+    async function loadAvaliable() {
       const response = await api.get(`providers/${provider.id}/available`, {
         params: {
           date: date.getTime(),
@@ -24,11 +25,19 @@ export default function SelectDateTime([navigation]) {
 
       setHours(response.data);
     }
-    loadAvailable();
+
+    loadAvaliable();
   }, [date, provider.id]);
 
+  function handleSelectHour(time) {
+    navigation.navigate('Confirm', {
+      provider,
+      time,
+    });
+  }
+
   return (
-    <Backgroud>
+    <Background>
       <Container>
         <DateInput date={date} onChange={setDate} />
 
@@ -36,25 +45,28 @@ export default function SelectDateTime([navigation]) {
           data={hours}
           keyExtractor={item => item.time}
           renderItem={({ item }) => (
-            <Hour onPress={() => {}} enabled={item.avaliable}>
+            <Hour
+              onPress={() => handleSelectHour(item.value)}
+              enabled={item.available}
+            >
               <Title>{item.time}</Title>
             </Hour>
           )}
         />
       </Container>
-    </Backgroud>
+    </Background>
   );
 }
 
 SelectDateTime.navigationOptions = ({ navigation }) => ({
-  title: 'Selecione o Horário',
+  title: 'Selecione o horário',
   headerLeft: () => (
     <TouchableOpacity
       onPress={() => {
-        navigation.goBack();
+        navigation.navigate('SelectProvider');
       }}
     >
-      <Icon name="chevron-left" size={20} color="#FFF" />
+      <Icon name="chevron-left" size={20} color="#fff" />
     </TouchableOpacity>
   ),
 });

@@ -6,8 +6,8 @@ export const Container = styled.SafeAreaView`
 `;
 
 export const HourList = styled.FlatList.attrs({
-  showVerticalScrollIndicator: false,
   numColumns: 2,
+  showsVerticalScrollIndicator: false,
 })`
   padding: 0 20px;
 `;
